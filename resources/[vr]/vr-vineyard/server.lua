@@ -1,0 +1,98 @@
+RegisterNetEvent('vr-vineyard:server:getGrapes')
+AddEventHandler('vr-vineyard:server:getGrapes', function()
+    local Player = VRCore.Functions.GetPlayer(source)
+
+    Player.Functions.AddItem("grape", Config.GrapeAmount)
+    TriggerClientEvent('inventory:client:ItemBox', source, VRCore.Shared.Items['grape'], "add")
+end)
+
+RegisterServerEvent('vr-vineyard:server:loadIngredients') 
+AddEventHandler('vr-vineyard:server:loadIngredients', function()
+	local xPlayer = VRCore.Functions.GetPlayer(tonumber(source))
+    local grape = xPlayer.Functions.GetItemByName('grape')
+
+	if xPlayer.PlayerData.items ~= nil then 
+        if grape ~= nil then 
+            if grape.amount >= 23 then 
+
+                xPlayer.Functions.RemoveItem("grape", 23, false)
+                TriggerClientEvent('inventory:client:ItemBox', source, VRCore.Shared.Items['grape'], "remove")
+                
+                TriggerClientEvent("vr-vineyard:client:loadIngredients", source)
+
+            else
+                TriggerClientEvent('VRCore:Notify', source, "You do not have the correct items", 'error')   
+            end
+        else
+            TriggerClientEvent('VRCore:Notify', source, "You do not have the correct items", 'error')   
+        end
+	else
+		TriggerClientEvent('VRCore:Notify', source, "You Have Nothing...", "error")
+	end 
+	
+end) 
+
+RegisterServerEvent('vr-vineyard:server:grapeJuice') 
+AddEventHandler('vr-vineyard:server:grapeJuice', function()
+	local xPlayer = VRCore.Functions.GetPlayer(tonumber(source))
+    local grape = xPlayer.Functions.GetItemByName('grape')
+
+	if xPlayer.PlayerData.items ~= nil then 
+        if grape ~= nil then 
+            if grape.amount >= 16 then 
+
+                xPlayer.Functions.RemoveItem("grape", 16, false)
+                TriggerClientEvent('inventory:client:ItemBox', source, VRCore.Shared.Items['grape'], "remove")
+                
+                TriggerClientEvent("vr-vineyard:client:grapeJuice", source)
+
+            else
+                TriggerClientEvent('VRCore:Notify', source, "You do not have the correct items", 'error')   
+            end
+        else
+            TriggerClientEvent('VRCore:Notify', source, "You do not have the correct items", 'error')   
+        end
+	else
+		TriggerClientEvent('VRCore:Notify', source, "You Have Nothing...", "error")
+	end 
+	
+end) 
+
+RegisterServerEvent('vr-vineyard:server:receiveWine')
+AddEventHandler('vr-vineyard:server:receiveWine', function()
+	local xPlayer = VRCore.Functions.GetPlayer(tonumber(source))
+
+	xPlayer.Functions.AddItem("wine", Config.WineAmount, false)
+	TriggerClientEvent('inventory:client:ItemBox', source, VRCore.Shared.Items['wine'], "add")
+end)
+
+RegisterServerEvent('vr-vineyard:server:receiveGrapeJuice')
+AddEventHandler('vr-vineyard:server:receiveGrapeJuice', function()
+	local xPlayer = VRCore.Functions.GetPlayer(tonumber(source))
+
+	xPlayer.Functions.AddItem("grapejuice", Config.GrapeJuiceAmount, false)
+	TriggerClientEvent('inventory:client:ItemBox', source, VRCore.Shared.Items['grapejuice'], "add")
+end)
+
+
+-- Hire/Fire
+
+--[[ VRCore.Commands.Add("hirevineyard", "Hire a player to the Vineyard!", {{name="id", help="Player ID"}}, true, function(source, args)
+    local Player = VRCore.Functions.GetPlayer(tonumber(args[1]))
+    local Myself = VRCore.Functions.GetPlayer(source)
+    if Player ~= nil then 
+        if (Myself.PlayerData.gang.name == "la_familia") then
+            Player.Functions.SetJob("vineyard")
+        end
+    end
+end)
+
+VRCore.Commands.Add("firevineyard", "Fire a player to the Vineyard!", {{name="id", help="Player ID"}}, true, function(source, args)
+    local Player = VRCore.Functions.GetPlayer(tonumber(args[1]))
+    local Myself = VRCore.Functions.GetPlayer(source)
+    if Player ~= nil then 
+        if (Myself.PlayerData.gang.name == "la_familia") then
+            Player.Functions.SetJob("unemployed")
+        end
+    end
+end) ]]

@@ -166,7 +166,7 @@ AddEventHandler('animations:client:EmoteCommandStart', function(args)
   if CanDoEmote then
     EmoteCommandStart(source, args)
   else
-    QBCore.Functions.Notify("Cannot Be Done Right Now", "error")
+    VRCore.Functions.Notify("Cannot Be Done Right Now", "error")
   end
 end)
 
@@ -305,7 +305,7 @@ function EmoteCommandStart(source, args, raw)
         if IsInAnimation then
             EmoteCancel()
         else
-          QBCore.Functions.Notify('No Emote To Cancel', 'error')
+          VRCore.Functions.Notify('No Emote To Cancel', 'error')
         end
       return
     elseif name == "help" then
@@ -319,7 +319,7 @@ function EmoteCommandStart(source, args, raw)
     elseif DP.PropEmotes[name] ~= nil then
       if OnEmotePlay(DP.PropEmotes[name]) then end return
     else
-      QBCore.Functions.Notify('That Is Not A Valid Command', 'error')
+      VRCore.Functions.Notify('That Is Not A Valid Command', 'error')
     end
   end
 end

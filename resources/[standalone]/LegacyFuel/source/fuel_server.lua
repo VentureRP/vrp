@@ -1,6 +1,6 @@
 RegisterServerEvent('fuel:pay')
 AddEventHandler('fuel:pay', function(price, source)
-	local xPlayer = QBCore.Functions.GetPlayer(source)
+	local xPlayer = VRCore.Functions.GetPlayer(source)
 	local amount = math.floor(price + 0.5)
 
 	if price > 0 then

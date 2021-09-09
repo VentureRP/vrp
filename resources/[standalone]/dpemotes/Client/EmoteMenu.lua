@@ -6,20 +6,20 @@ menuPosition = {x = 0, y = 200}
 PlayerData = {}
 isLoggedIn = false
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
-AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-    PlayerData = QBCore.Functions.GetPlayerData()
+RegisterNetEvent('VRCore:Client:OnPlayerLoaded')
+AddEventHandler('VRCore:Client:OnPlayerLoaded', function()
+    PlayerData = VRCore.Functions.GetPlayerData()
     isLoggedIn = true
 end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerUnload')
-AddEventHandler('QBCore:Client:OnPlayerUnload', function()
+RegisterNetEvent('VRCore:Client:OnPlayerUnload')
+AddEventHandler('VRCore:Client:OnPlayerUnload', function()
     PlayerData = {}
     isLoggedIn = false
 end)
 
-RegisterNetEvent('QBCore:Player:SetPlayerData')
-AddEventHandler('QBCore:Player:SetPlayerData', function(val)
+RegisterNetEvent('VRCore:Player:SetPlayerData')
+AddEventHandler('VRCore:Player:SetPlayerData', function(val)
     PlayerData = val
 end)
 
@@ -335,7 +335,7 @@ end)
 AddEventHandler('onResourceStart', function(resource)
   if resource == GetCurrentResourceName() then
       Wait(200)
-      PlayerData = QBCore.Functions.GetPlayerData()
+      PlayerData = VRCore.Functions.GetPlayerData()
       isLoggedIn = true
   end
 end)

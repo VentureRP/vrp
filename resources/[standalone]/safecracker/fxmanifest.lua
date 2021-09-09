@@ -6,7 +6,7 @@ version '1.0.0'
 
 client_scripts {
   'config.lua',
-  '@qb-core/import.lua',
+  '@vr-core/import.lua',
   'client.lua'
 }
 

@@ -8,7 +8,6 @@
 -- Description: FiveM menu library for creating menu's
 ----------------------- [ MenuV ] -----------------------
 local assert = assert
----@type Utilities
 local U = assert(Utilities)
 local type = assert(type)
 local next = assert(next)
@@ -35,8 +34,6 @@ local REQUEST_STREAMED_TEXTURE_DICT = assert(RequestStreamedTextureDict)
 --- MenuV local variable
 local current_resource = GET_CURRENT_RESOURCE_NAME()
 
---- Returns default empty table for items
----@returns items
 function CreateEmptyItemsTable(data)
     data = U:Ensure(data, {})
     data.ToTable = function(t)
@@ -190,6 +187,7 @@ function CreateEmptyItemsTable(data)
         local _k, _v = next((rawget(t, 'data') or {}), k)
 
         if (_v ~= nil and (type(_v) ~= 'table' or type(_k) ~= 'number')) then
+            ---@diagnostic disable-next-line: undefined-global
             return item_ipairs(t, _k)
         end
 
@@ -199,7 +197,6 @@ function CreateEmptyItemsTable(data)
     _G.item_pairs = item_pairs
     _ENV.item_pairs = item_pairs
 
-    ---@class items
     return setmetatable({ data = data, Trigger = nil }, {
         __index = function(t, k)
             return rawget(t.data, k)
@@ -269,9 +266,6 @@ local function LoadTextureDictionary(textureDictionary)
     REQUEST_STREAMED_TEXTURE_DICT(textureDictionary, true)
 end
 
---- Create a new menu item
----@param info table Menu information
----@return Menu New item
 function CreateMenu(info)
     info = U:Ensure(info, {})
 
@@ -294,38 +288,37 @@ function CreateMenu(info)
     end
 
     local item = {
-        ---@type string
+
         Namespace = namespace,
-        ---@type boolean
+
         IsOpen = false,
-        ---@type string
+
         UUID = U:UUID(),
-        ---@type string
+
         Title = not (info.Title or info.title) and '‏‏‎ ‎' or U:Ensure(info.Title or info.title, 'MenuV'),
-        ---@type string
+
         Subtitle = U:Ensure(info.Subtitle or info.subtitle, ''),
-        ---@type string | "'topleft'" | "'topcenter'" | "'topright'" | "'centerleft'" | "'center'" | "'centerright'" | "'bottomleft'" | "'bottomcenter'" | "'bottomright'"
+
         Position = U:Ensure(info.Position or info.position, 'topleft'),
-        ---@type table
+
         Color = {
             R = U:Ensure(info.R or info.r, 0),
             G = U:Ensure(info.G or info.g, 0),
             B = U:Ensure(info.B or info.b, 255)
         },
-        ---@type string | "'size-100'" | "'size-110'" | "'size-125'" | "'size-150'" | "'size-175'" | "'size-200'"
+
         Size = U:Ensure(info.Size or info.size, 'size-110'),
-        ---@type string
+
         Dictionary = U:Ensure(info.Dictionary or info.dictionary, 'menuv'),
-        ---@type string
+
         Texture = U:Ensure(info.Texture or info.texture, 'default'),
-        ---@type table
+
         Events = U:Ensure(info.Events or info.events, {}),
-        ---@type string
+
         Theme = theme,
-        ---@type Item[]
+
         Items = CreateEmptyItemsTable({}),
-        ---@param t Menu
-        ---@param event string Name of Event
+
         Trigger = function(t, event, ...)
             event = lower(U:Ensure(event, 'unknown'))
 
@@ -370,9 +363,9 @@ function CreateMenu(info)
                 end
             end
         end,
-        ---@type thread[]
+
         Threads = {},
-        ---@param t Menu
+
         DestroyThreads = function(t)
             for _, threadId in pairs(t.data.Threads or {}) do
                 local threadStatus = coroutine.status(threadId)
@@ -384,10 +377,7 @@ function CreateMenu(info)
 
             t.data.Threads = {}
         end,
-        ---@param t Menu
-        ---@param event string Name of event
-        ---@param func function|Menu Function or Menu to trigger
-        ---@return string UUID of event
+
         On = function(t, event, func)
             local ir = GET_INVOKING_RESOURCE()
             local resource = U:Ensure(ir, current_resource)
@@ -417,9 +407,7 @@ function CreateMenu(info)
 
             return uuid
         end,
-        ---@param t Menu
-        ---@param event string Name of event
-        ---@param uuid string UUID of event
+
         RemoveOnEvent = function(t, event, uuid)
             local ir = GET_INVOKING_RESOURCE()
             local resource = U:Ensure(ir, current_resource)
@@ -447,15 +435,11 @@ function CreateMenu(info)
                 end
             end
         end,
-        ---@param t Item
-        ---@param k string
-        ---@param v string
+
         Validate = U:Ensure(info.Validate or info.validate, function(t, k, v)
             return true
         end),
-        ---@param t Item
-        ---@param k string
-        ---@param v string
+
         Parser = function(t, k, v)
             if (k == 'Position' or k == 'position') then
                 local position = lower(U:Ensure(v, 'topleft'))
@@ -469,15 +453,10 @@ function CreateMenu(info)
 
             return v
         end,
-        ---@param t Item
-        ---@param k string
-        ---@param v string
+
         NewIndex = U:Ensure(info.NewIndex or info.newIndex, function(t, k, v)
         end),
-        ---@type function
-        ---@param t Menu MenuV menu
-        ---@param info table Information about button
-        ---@return Item New item
+
         AddButton = function(t, info)
             info = U:Ensure(info, {})
 
@@ -513,10 +492,7 @@ function CreateMenu(info)
 
             return t.Items[#t.Items] or item
         end,
-        ---@type function
-        ---@param t Menu MenuV menu
-        ---@param info table Information about checkbox
-        ---@return Item New item
+
         AddCheckbox = function(t, info)
             info = U:Ensure(info, {})
 
@@ -556,10 +532,7 @@ function CreateMenu(info)
 
             return t.Items[#t.Items] or item
         end,
-        ---@type function
-        ---@param t Menu MenuV menu
-        ---@param info table Information about slider
-        ---@return SliderItem New slider item
+
         AddSlider = function(t, info)
             info = U:Ensure(info, {})
 
@@ -569,29 +542,9 @@ function CreateMenu(info)
             info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
             info.__menu = t
 
-            ---@class SliderItem : Item
-            ---@filed private __event string Name of primary event
-            ---@field public UUID string UUID of Item
-            ---@field public Icon string Icon/Emoji for Item
-            ---@field public Label string Label of Item
-            ---@field public Description string Description of Item
-            ---@field public Value any Value of Item
-            ---@field public Values table[] List of values
-            ---@field public Min number Min range value
-            ---@field public Max number Max range value
-            ---@field public Disabled boolean Disabled state of Item
-            ---@field private Events table<string, function[]> List of registered `on` events
-            ---@field public Trigger fun(t: Item, event: string)
-            ---@field public On fun(t: Item, event: string, func: function)
-            ---@field public Validate fun(t: Item, k: string, v:any)
-            ---@field public NewIndex fun(t: Item, k: string, v: any)
-            ---@field public GetValue fun(t: Item):any
-            ---@field public AddValue fun(t: Item, info: table)
-            ---@field public AddValues fun(t: Item)
             local item = CreateMenuItem(info)
 
             --- Add a value to slider
-            ---@param info table Information about slider
             function item:AddValue(info)
                 info = U:Ensure(info, {})
 
@@ -604,8 +557,7 @@ function CreateMenu(info)
                 insert(self.Values, value)
             end
 
-            --- Add values to slider
-            ---@vararg table[] List of values
+
             function item:AddValues(...)
                 local arguments = pack(...)
 
@@ -644,10 +596,7 @@ function CreateMenu(info)
 
             return t.Items[#t.Items] or item
         end,
-        ---@type function
-        ---@param t Menu MenuV menu
-        ---@param info table Information about range
-        ---@return RangeItem New Range item
+
         AddRange = function(t, info)
             info = U:Ensure(info, {})
 
@@ -681,29 +630,10 @@ function CreateMenu(info)
             if (info.Value < info.Min) then info.Value = info.Min end
             if (info.Value > info.Max) then info.Value = info.Max end
 
-            ---@class RangeItem : Item
-            ---@filed private __event string Name of primary event
-            ---@field public UUID string UUID of Item
-            ---@field public Icon string Icon/Emoji for Item
-            ---@field public Label string Label of Item
-            ---@field public Description string Description of Item
-            ---@field public Value any Value of Item
-            ---@field public Values table[] List of values
-            ---@field public Min number Min range value
-            ---@field public Max number Max range value
-            ---@field public Disabled boolean Disabled state of Item
-            ---@field private Events table<string, function[]> List of registered `on` events
-            ---@field public Trigger fun(t: Item, event: string)
-            ---@field public On fun(t: Item, event: string, func: function)
-            ---@field public Validate fun(t: Item, k: string, v:any)
-            ---@field public NewIndex fun(t: Item, k: string, v: any)
-            ---@field public GetValue fun(t: Item):any
-            ---@field public SetMinValue fun(t: any)
-            ---@field public SetMaxValue fun(t: any)
+
             local item = CreateMenuItem(info)
 
-            --- Update min value of range
-            ---@param input number Minimum value of Range
+
             function item:SetMinValue(input)
                 input = U:Ensure(input, 0)
 
@@ -718,8 +648,7 @@ function CreateMenu(info)
                 end
             end
 
-            --- Update max value of range
-            ---@param input number Minimum value of Range
+
             function item:SetMaxValue(input)
                 input = U:Ensure(input, 0)
 
@@ -750,10 +679,7 @@ function CreateMenu(info)
 
             return t.Items[#t.Items] or item
         end,
-        ---@type function
-        ---@param t Menu MenuV menu
-        ---@param info table Information about confirm
-        ---@return ConfirmItem New Confirm item
+
         AddConfirm = function(t, info)
             info = U:Ensure(info, {})
 
@@ -775,25 +701,7 @@ function CreateMenu(info)
                 end
             end
 
-            ---@class ConfirmItem : Item
-            ---@filed private __event string Name of primary event
-            ---@field public UUID string UUID of Item
-            ---@field public Icon string Icon/Emoji for Item
-            ---@field public Label string Label of Item
-            ---@field public Description string Description of Item
-            ---@field public Value any Value of Item
-            ---@field public Values table[] List of values
-            ---@field public Min number Min range value
-            ---@field public Max number Max range value
-            ---@field public Disabled boolean Disabled state of Item
-            ---@field private Events table<string, function[]> List of registered `on` events
-            ---@field public Trigger fun(t: Item, event: string)
-            ---@field public On fun(t: Item, event: string, func: function)
-            ---@field public Validate fun(t: Item, k: string, v:any)
-            ---@field public NewIndex fun(t: Item, k: string, v: any)
-            ---@field public GetValue fun(t: Item):any
-            ---@field public Confirm fun(t: Item)
-            ---@field public Deny fun(t: Item)
+
             local item = CreateMenuItem(info)
 
             --- Confirm this item
@@ -817,20 +725,11 @@ function CreateMenu(info)
 
             return t.Items[#t.Items] or item
         end,
-        --- Create child menu from properties of this object
-        ---@param t Menu|string MenuV menu
-        ---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
-        ---@param namespace string Namespace of menu
+
         InheritMenu = function(t, overrides, namespace)
             return MenuV:InheritMenu(t, overrides, namespace)
         end,
-        --- Add control key for specific menu
-        ---@param t Menu|string MenuV menu
-        ---@param action string Name of action
-        ---@param func function This will be executed
-        ---@param description string Key description
-        ---@param defaultType string Default key type
-        ---@param defaultKey string Default key
+
         AddControlKey = function(t, action, func, description, defaultType, defaultKey)
             if (U:Typeof(t.Namespace) ~= 'string' or t.Namespace == 'unknown') then
                 error('[MenuV] Namespace is required for assigning keys.')
@@ -839,10 +738,7 @@ function CreateMenu(info)
 
             MenuV:AddControlKey(t, action, func, description, defaultType, defaultKey)
         end,
-        --- Assign key for opening this menu
-        ---@param t Menu|string MenuV menu
-        ---@param defaultType string Default key type
-        ---@param defaultKey string Default key
+
         OpenWith = function(t, defaultType, defaultKey)
             t:AddControlKey('open', function(m)
                 MenuV:CloseAll(function()
@@ -850,26 +746,19 @@ function CreateMenu(info)
                 end)
             end, MenuV:T('open_menu'):format(t.Namespace), defaultType, defaultKey)
         end,
-        --- Change title of menu
-        ---@param t Menu
-        ---@param title string Title of menu
+
         SetTitle = function(t, title)
             t.Title = U:Ensure(title, 'MenuV')
         end,
-        --- Change subtitle of menu
-        ---@param t Menu
-        ---@param subtitle string Subtitle of menu
+
         SetSubtitle = function(t, subtitle)
             t.Subtitle = U:Ensure(subtitle, '')
         end,
-        --- Change subtitle of menu
-        ---@param t Menu
-        ---@param position string | "'topleft'" | "'topcenter'" | "'topright'" | "'centerleft'" | "'center'" | "'centerright'" | "'bottomleft'" | "'bottomcenter'" | "'bottomright'"
+
         SetPosition = function(t, position)
             t.Position = U:Ensure(position, 'topleft')
         end,
-        --- Clear all Menu items
-        ---@param t Menu
+
         ClearItems = function(t, update)
             update = U:Ensure(update, true)
 
@@ -891,9 +780,7 @@ function CreateMenu(info)
         Close = function(t)
             MenuV:CloseMenu(t)
         end,
-        --- @see Menu to @see table
-        ---@param t Menu
-        ---@return table
+
         ToTable = function(t)
             local tempTable = {
                 theme = U:Ensure(t.Theme, 'default'),
@@ -1026,37 +913,6 @@ function CreateMenu(info)
         __metatable = 'MenuV',
     }
 
-    ---@class Menu
-    ---@field public IsOpen boolean `true` if menu is open, otherwise `false`
-    ---@field public UUID string UUID of Menu
-    ---@field public Title string Title of Menu
-    ---@field public Subtitle string Subtitle of Menu
-    ---@field public Position string | "'topleft'" | "'topcenter'" | "'topright'" | "'centerleft'" | "'center'" | "'centerright'" | "'bottomleft'" | "'bottomcenter'" | "'bottomright'"
-    ---@field public Texture string Name of texture example: "default"
-    ---@field public Dictionary string Name of dictionary example: "menuv"
-    ---@field public Color table<string, number> Color of Menu
-    ---@field private Events table<string, fun[]> List of registered `on` events
-    ---@field public Items Item[] List of items
-    ---@field public Trigger fun(t: Item, event: string)
-    ---@field public On fun(t: Menu, event: string, func: function|Menu): string
-    ---@field public RemoveOnEvent fun(t: Menu, event: string, uuid: string)
-    ---@field public Validate fun(t: Menu, k: string, v:any)
-    ---@field public NewIndex fun(t: Menu, k: string, v: any)
-    ---@field public Parser fun(t: Menu, k: string, v: any)
-    ---@field public AddButton fun(t: Menu, info: table):Item
-    ---@field public AddCheckbox fun(t: Menu, info: table):Item
-    ---@field public AddSlider fun(t: Menu, info: table):SliderItem
-    ---@field public AddRange fun(t: Menu, info: table):RangeItem
-    ---@field public AddConfirm fun(t: Menu, info: table):ConfirmItem
-    ---@field public AddControlKey fun(t: Menu, action: string, func: function, description: string, defaultType: string, defaultKey: string)
-    ---@field public OpenWith fun(t: Menu, defaultType: string, defaultKey: string)
-    ---@field public SetTitle fun(t: Menu, title: string)
-    ---@field public SetSubtitle fun(t: Menu, subtitle: string)
-    ---@field public SetPosition fun(t: Menu, position: string)
-    ---@field public ClearItems fun(t: Menu)
-    ---@field public Open fun(t: Menu)
-    ---@field public Close fun(t: Menu)
-    ---@field public ToTable fun(t: Menu):table
     local menu = setmetatable({ data = item, __class = 'Menu', __type = 'Menu' }, mt)
 
     menu.Items(function(items, trigger, key, index, value, oldValue)

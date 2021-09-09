@@ -26,40 +26,38 @@ local setmetatable = assert(setmetatable)
 local CreateThread = assert(Citizen.CreateThread)
 
 --- Create a new menu item
----@param info table Menu information
----@return Item New item
+
 function CreateMenuItem(info)
     info = U:Ensure(info, {})
 
     local item = {
-        ---@type Menu|nil
+
         __menu = U:Ensure(info.__Menu or info.__menu, { __class = 'Menu', __type = 'Menu' }, true) or nil,
-        ---@type string
+
         __event = U:Ensure(info.PrimaryEvent or info.primaryEvent, 'unknown'),
-        ---@type string
+
         UUID = U:UUID(),
-        ---@type string
+
         Icon = U:Ensure(info.Icon or info.icon, 'none'),
-        ---@type string
+
         Label = U:Ensure(info.Label or info.label, ''),
-        ---@type string
+
         Description = U:Ensure(info.Description or info.description, ''),
-        ---@type any
+
         Value = info.Value or info.value,
-        ---@type table[]
+
         Values = {},
-        ---@type number
+
         Min = U:Ensure(info.Min or info.min, 0),
-        ---@type number
+
         Max = U:Ensure(info.Max or info.max, 0),
-        ---@type boolean
+
         Disabled = U:Ensure(info.Disabled or info.disabled, false),
-        ---@type table
+
         Events = U:Ensure(info.Events or info.events, {}),
-        ---@type boolean
+
         SaveOnUpdate = U:Ensure(info.SaveOnUpdate or info.saveOnUpdate, false),
-        ---@param t Item
-        ---@param event string Name of Event
+
         Trigger = function(t, event, ...)
             event = lower(U:Ensure(event, 'unknown'))
 
@@ -82,9 +80,7 @@ function CreateMenuItem(info)
                 end)
             end
         end,
-        ---@param t Item
-        ---@param event string Name of event
-        ---@param func function|Menu Function or Menu to trigger
+
         On = function(t, event, func)
             event = lower(U:Ensure(event, 'unknown'))
 
@@ -120,25 +116,18 @@ function CreateMenuItem(info)
 
             insert(t.Events[event], func)
         end,
-        ---@param t Item
-        ---@param k string
-        ---@param v string
+
         Validate = U:Ensure(info.Validate or info.validate, function(t, k, v)
             return true
         end),
-        ---@param t Item
-        ---@param k string
-        ---@param v string
+
         Parser = U:Ensure(info.Parser or info.parser, function(t, k, v)
             return v
         end),
-        ---@param t Item
-        ---@param k string
-        ---@param v string
+
         NewIndex = U:Ensure(info.NewIndex or info.newIndex, function(t, k, v)
         end),
-        ---@param t Item
-        ---@return any
+
         GetValue = function(t)
             local itemType = U:Ensure(t.__type, 'unknown')
 
@@ -174,7 +163,7 @@ function CreateMenuItem(info)
                 return rawValue
             end
         end,
-        ---@return Menu|nil
+
         GetParentMenu = function(t)
             return t.__menu or nil
         end
@@ -236,26 +225,6 @@ function CreateMenuItem(info)
         __metatable = 'MenuV'
     }
 
-    ---@class Item
-    ---@filed private __event string Name of primary event
-    ---@field public UUID string UUID of Item
-    ---@field public Icon string Icon/Emoji for Item
-    ---@field public Label string Label of Item
-    ---@field public Description string Description of Item
-    ---@field public Value any Value of Item
-    ---@field public Values table[] List of values
-    ---@field public Min number Min range value
-    ---@field public Max number Max range value
-    ---@field public Disabled boolean Disabled state of Item
-    ---@field public SaveOnUpdate boolean Save on `update`
-    ---@field private Events table<string, function[]> List of registered `on` events
-    ---@field public Trigger fun(t: Item, event: string)
-    ---@field public On fun(t: Item, event: string, func: function|Menu)
-    ---@field public Validate fun(t: Item, k: string, v:any)
-    ---@field public NewIndex fun(t: Item, k: string, v: any)
-    ---@field public Parser fun(t: Item, k: string, v: any)
-    ---@field public GetValue fun(t: Item):any
-    ---@field public GetParentMenu func(t: Item):Menu|nil
     local i = setmetatable({ data = item, __class = 'Item', __type = U:Ensure(info.Type or info.type, 'unknown') }, mt)
 
     for k, v in pairs(info or {}) do

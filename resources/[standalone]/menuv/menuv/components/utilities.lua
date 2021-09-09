@@ -27,7 +27,6 @@ local GET_GAME_TIMER = assert(GetGameTimer)
 local GET_CURRENT_RESOURCE_NAME = assert(GetCurrentResourceName)
 
 --- Utilities for MenuV
----@class Utilities
 local Utilities = setmetatable({ __class = 'Utilities' }, {})
 
 --- Returns `true` if `input` starts with `start`, otherwise `false`
@@ -339,7 +338,7 @@ end
 local function tohex(x)
     x = Utilities:Ensure(x, 32)
 
-    local s, base, d = '', 16
+    local s, base, d = '', 16, nil
 
     while x > 0 do
         d = x % base + 1

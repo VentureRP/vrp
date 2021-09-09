@@ -6,7 +6,7 @@ description 'Legacy Fuel'
 version '1.3'
 
 shared_scripts { 
-	'@qb-core/import.lua',
+	'@vr-core/import.lua',
 	'config.lua'
 }
 
