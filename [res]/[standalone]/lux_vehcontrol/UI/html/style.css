@@ -1,0 +1,37 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.slide {
+	padding-top: 52px;
+	z-index: 950;
+}
+
+.button {
+
+}
+
+#buttonbox {
+	display: grid;
+	grid-template-areas: 'siren horn tkd lock';
+	position: absolute;
+	float: right;
+	right: 2.5%;
+	top: 10%;
+	z-index: 900;
+}
+
+#sirenbox {
+	display: none;
+	position: absolute;
+	overflow: hidden;
+	width: 625px;
+	height: 143px;
+	left: 0%;
+	top: 68%;
+	transform-origin: left top;
+	transform: scale(0.6);
+	background-image: url("../textures/background.png");
+}
